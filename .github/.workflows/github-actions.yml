@@ -1,0 +1,22 @@
+name: GitHub Actions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge:
+    types: [closed]
+
+jobs:
+  send-event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send webhook event
+        uses: distributhor/webhook-action@v2
+        with:
+          url: ${{ secrets.WEBHOOK_URL }}
+          method: POST
+          content-type: application/json
+          data: '{"event_type": "${{ github.event_name }}", "payload": ${{ toJson(github.event) }}}'
